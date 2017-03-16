@@ -8,5 +8,5 @@ setup(
     author_email='ksitht@gmail.com',
     url='https://github.com/cosine0/amphitrite',
     description='Symbolic binary debugging tool using Triton',
-    install_requires=['sympy', 'psutil']
+    install_requires=['sympy', 'psutil', 'pyelftools']
 )
