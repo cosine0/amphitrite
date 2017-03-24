@@ -18,7 +18,6 @@ then
 fi
 
 git clone --recursive https://github.com/boostorg/boost.git
-git 
 cd boost/
 ./bootstrap.sh
 sudo ./b2 install
