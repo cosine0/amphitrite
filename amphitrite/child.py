@@ -205,6 +205,7 @@ if __name__ == '__main__':
 
     # Add a callback.
     insertCall(before_symproc, INSERT_POINT.BEFORE_SYMPROC)
+    insertCall(before, INSERT_POINT.BEFORE_SYMPROC)
     insertCall(after, INSERT_POINT.AFTER)
 
     enableMode(MODE.ONLY_ON_SYMBOLIZED, True)
