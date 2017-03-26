@@ -53,10 +53,10 @@ git clone https://github.com/JonathanSalwan/Triton.git
 cd Triton
 mkdir build
 cd build
-cmake -DPINTOOL=on -DPINTOOL=on ..
+cmake -DPINTOOL=on -DKERNEL4=on ..
 make
 cd ../../../../../
 sudo cp -r pin-2.14-71313-gcc.4.4.7-linux/ /usr/local/bin/
 sudo sh -c 'echo 0 > /proc/sys/kernel/yama/ptrace_scope'
-sudo ln -s /usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/triton /usr/local/bin/triton
-sudo ln -s /usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/tritonAttach /usr/local/bin/tritonAttach
+sudo ln -s /usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/build/triton /usr/local/bin/triton
+sudo ln -s /usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/build/tritonAttach /usr/local/bin/tritonAttach
