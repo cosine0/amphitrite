@@ -12,9 +12,11 @@ from triton import *
 
 started = False
 
+breaks_before_symproc = set()
 breaks_before = set()
 breaks_after = set()
 
+conditional_break_before_symproc = None
 conditional_break_before = None
 conditional_break_after = None
 
@@ -52,7 +54,7 @@ def convert_string_to_variable(address, length=None):
 
 
 def process_commands(instruction=None):
-    global started, breaks_before, breaks_after, conditional_break_before, conditional_break_after
+    global started, breaks_before_symproc, breaks_before, breaks_after, conditional_break_before_symproc, conditional_break_before, conditional_break_after
     while True:
         # run, run_to, exit 나올 때까지 루프
         try:
@@ -71,8 +73,8 @@ def process_commands(instruction=None):
         elif command['action'] == 'run_to':
             if command['inclusive']:
                 breaks_after.add(command['address'])
-            else:
-                breaks_before.add(command['address'])
+            elif command['commit']:
+                breaks_before_symproc.add(command['address'])
             if not started:
                 started = True
                 # Run the instrumentation - Never returns
@@ -85,8 +87,10 @@ def process_commands(instruction=None):
             condition = types.FunctionType(code, globals(), "condition")
             if command['inclusive']:
                 conditional_break_after = condition
+            elif command['commit']:
+                breaks_before_symproc = condition
             else:
-                conditional_break_before = condition
+                conditional_break_before_symproc = condition
             if not started:
                 started = True
                 # Run the instrumentation - Never returns
@@ -146,6 +150,20 @@ def process_commands(instruction=None):
 
 
 def before_symproc(instruction):
+    global breaks_before_symproc, conditional_break_before_symproc
+    address = instruction.getAddress()
+    if address in breaks_before_symproc:
+        breaks_before_symproc.remove(address)
+        client.send('at break.')
+        process_commands(instruction)
+    elif conditional_break_before_symproc is not None:
+        if conditional_break_before_symproc(instruction):
+            conditional_break_before_symproc = None
+            client.send('at break.')
+            process_commands(instruction)
+
+
+def before(instruction):
     global breaks_before, conditional_break_before
     address = instruction.getAddress()
     if address in breaks_before:
