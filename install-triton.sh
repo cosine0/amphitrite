@@ -1,6 +1,6 @@
 #!/bin/bash
-# work only on ubuntu 14.04~14.04.3, 16.04 and 16.04.1 installations
-# and theirs updates, not on 14.04.4, 14.04.5 and 16.04.2 image installation.
+# work only on ubuntu 14.04~14.04.3, 16.04 and 16.04.1 installations and
+# theirs updates, not on 14.04.4, 14.04.5 and 16.04.2 original installation.
 
 if ! dpkg -s git 2> /dev/null > /dev/null
 then
