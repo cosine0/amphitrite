@@ -8,7 +8,8 @@ import marshal
 from multiprocessing.connection import Listener
 from elftools.elf.elffile import ELFFile
 
-rax, eax, al, rbx, rdx, rbp, rsi, esi, rdi, r13, rip = sympy.symbols('rax eax al rbx rdx rbp rsi esi rdi r13 rip')
+rax, eax, al, rbx, rdx, rbp, rsi, esi, rdi, r12, r13, rip\
+    = sympy.symbols('rax eax al rbx rdx rbp rsi esi rdi r12 r13 rip')
 started_child = []
 
 original_excepthook = sys.excepthook
@@ -137,6 +138,18 @@ class Concrete(object):
 
         self.running = True
         self.connection.send({'action': 'run_to', 'address': address, 'inclusive': include_this_address,'commit': commit_this_address_to_hw})
+        print '[>] Triton is running'
+
+    @method_at_break
+    def run_to_next_instruction(self, address, include_next_instruction=False, commit_next_instruction_to_hw=None):
+        exit_value = self.process.poll()
+        if exit_value is not None:
+            raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
+
+        self.running = True
+        self.connection.send({'action': 'run_to_next_instruction', 'address': address,
+                              'inclusive': include_next_instruction,
+                              'commit': commit_next_instruction_to_hw})
         print '[>] Triton is running'
 
     @method_at_break

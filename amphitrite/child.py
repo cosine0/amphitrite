@@ -16,6 +16,10 @@ breaks_before_symproc = set()
 breaks_before = set()
 breaks_after = set()
 
+step_before_symproc = False
+step_before = False
+step_after = False
+
 conditional_break_before_symproc = None
 conditional_break_before = None
 conditional_break_after = None
@@ -54,7 +58,8 @@ def convert_string_to_variable(address, length=None):
 
 
 def process_commands(instruction=None):
-    global started, breaks_before_symproc, breaks_before, breaks_after, conditional_break_before_symproc, conditional_break_before, conditional_break_after
+    global started, breaks_before_symproc, breaks_before, breaks_after, step_before_symproc, step_before, step_after,\
+        conditional_break_before_symproc, conditional_break_before, conditional_break_after
     while True:
         # run, run_to, exit 나올 때까지 루프
         try:
@@ -78,6 +83,20 @@ def process_commands(instruction=None):
                     breaks_before.add(command['address'])
             else:
                 breaks_before_symproc.add(command['address'])
+            if not started:
+                started = True
+                # Run the instrumentation - Never returns
+                runProgram()
+            else:
+                break
+        elif command['action'] == 'run_to_next_intruction':
+            if command['inclusive']:
+                if command['commit']:
+                    step_after = True
+                else:
+                    step_before = True
+            else:
+                step_before_symproc = True
             if not started:
                 started = True
                 # Run the instrumentation - Never returns
@@ -154,8 +173,11 @@ def process_commands(instruction=None):
 
 
 def before_symproc(instruction):
-    global breaks_before_symproc, conditional_break_before_symproc
+    global breaks_before_symproc, step_before_symproc, conditional_break_before_symproc
     address = instruction.getAddress()
+    if step_before_symproc:
+        step_before_symproc = False
+        process_commands(instruction)
     if address in breaks_before_symproc:
         breaks_before_symproc.remove(address)
         client.send('at break.')
@@ -168,8 +190,11 @@ def before_symproc(instruction):
 
 
 def before(instruction):
-    global breaks_before, conditional_break_before
+    global breaks_before, step_before, conditional_break_before
     address = instruction.getAddress()
+    if step_before:
+        step_before = False
+        process_commands(instruction)
     if address in breaks_before:
         breaks_before.remove(address)
         client.send('at break.')
@@ -182,8 +207,11 @@ def before(instruction):
 
 
 def after(instruction):
-    global breaks_after, conditional_break_after
+    global breaks_after, step_after, conditional_break_after
     address = instruction.getAddress()
+    if step_after:
+        step_after = False
+        process_commands(instruction)
     if address in breaks_after:
         breaks_after.remove(address)
         client.send('at break.')
