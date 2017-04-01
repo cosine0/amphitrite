@@ -8,7 +8,7 @@ import marshal
 from multiprocessing.connection import Listener
 from elftools.elf.elffile import ELFFile
 
-rax, eax, al, rbx, rdx, rbp, rsi, esi, rdi, rip = sympy.symbols('rax eax al rbx rdx rbp rsi esi rdi rip')
+rax, eax, al, rbx, rdx, rbp, rsi, esi, rdi, r13, rip = sympy.symbols('rax eax al rbx rdx rbp rsi esi rdi r13 rip')
 started_child = []
 
 original_excepthook = sys.excepthook
