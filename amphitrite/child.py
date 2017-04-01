@@ -177,6 +177,7 @@ def before_symproc(instruction):
     address = instruction.getAddress()
     if step_before_symproc:
         step_before_symproc = False
+        client.send('at break.')
         process_commands(instruction)
     if address in breaks_before_symproc:
         breaks_before_symproc.remove(address)
