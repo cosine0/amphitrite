@@ -89,7 +89,7 @@ def process_commands(instruction=None):
                 runProgram()
             else:
                 break
-        elif command['action'] == 'run_to_next_intruction':
+        elif command['action'] == 'run_to_next_instruction':
             if command['inclusive']:
                 if command['commit']:
                     step_after = True
