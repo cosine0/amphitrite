@@ -141,13 +141,13 @@ class Concrete(object):
         print '[>] Triton is running'
 
     @method_at_break
-    def run_to_next_instruction(self, address, include_next_instruction=False, commit_next_instruction_to_hw=None):
+    def run_to_next_instruction(self, include_next_instruction=False, commit_next_instruction_to_hw=None):
         exit_value = self.process.poll()
         if exit_value is not None:
             raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
 
         self.running = True
-        self.connection.send({'action': 'run_to_next_instruction', 'address': address,
+        self.connection.send({'action': 'run_to_next_instruction',
                               'inclusive': include_next_instruction,
                               'commit': commit_next_instruction_to_hw})
         print '[>] Triton is running'
