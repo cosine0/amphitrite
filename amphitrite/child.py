@@ -194,6 +194,7 @@ def before(instruction):
     address = instruction.getAddress()
     if step_before:
         step_before = False
+        client.send('at break.')
         process_commands(instruction)
     if address in breaks_before:
         breaks_before.remove(address)
@@ -211,6 +212,7 @@ def after(instruction):
     address = instruction.getAddress()
     if step_after:
         step_after = False
+        client.send('at break.')
         process_commands(instruction)
     if address in breaks_after:
         breaks_after.remove(address)
