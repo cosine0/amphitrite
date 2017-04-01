@@ -72,8 +72,11 @@ def process_commands(instruction=None):
                 break
         elif command['action'] == 'run_to':
             if command['inclusive']:
-                breaks_after.add(command['address'])
-            elif command['commit']:
+                if command['commit']:
+                    breaks_after.add(command['address'])
+                else:
+                    breaks_before.add(command['address'])
+            else:
                 breaks_before_symproc.add(command['address'])
             if not started:
                 started = True
@@ -86,9 +89,10 @@ def process_commands(instruction=None):
             code = marshal.loads(serialized_function)
             condition = types.FunctionType(code, globals(), "condition")
             if command['inclusive']:
-                conditional_break_after = condition
-            elif command['commit']:
-                breaks_before_symproc = condition
+                if command['commit']:
+                    conditional_break_after = condition
+                else:
+                    breaks_before_symproc = condition
             else:
                 conditional_break_before_symproc = condition
             if not started:
@@ -205,7 +209,7 @@ if __name__ == '__main__':
 
     # Add a callback.
     insertCall(before_symproc, INSERT_POINT.BEFORE_SYMPROC)
-    insertCall(before, INSERT_POINT.BEFORE_SYMPROC)
+    insertCall(before, INSERT_POINT.BEFORE)
     insertCall(after, INSERT_POINT.AFTER)
 
     enableMode(MODE.ONLY_ON_SYMBOLIZED, True)
