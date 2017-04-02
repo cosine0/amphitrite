@@ -22,7 +22,7 @@ cd boost/
 ./bootstrap.sh
 sudo ./b2 install
 cd ..
-rm -rf boost
+sudo rm -rf boost
 
 git clone https://github.com/Z3Prover/z3
 cd z3/
@@ -60,3 +60,4 @@ sudo cp -r pin-2.14-71313-gcc.4.4.7-linux/ /usr/local/bin/
 sudo sh -c 'echo 0 > /proc/sys/kernel/yama/ptrace_scope'
 sudo ln -s /usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/build/triton /usr/local/bin/triton
 sudo ln -s /usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/build/tritonAttach /usr/local/bin/tritonAttach
+rm -rf pin-2.14-71313-gcc.4.4.7-linux
