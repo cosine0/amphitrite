@@ -61,7 +61,6 @@ def process_commands(instruction=None):
     global started, breaks_before_symproc, breaks_before, breaks_after, step_before_symproc, step_before, step_after,\
         conditional_break_before_symproc, conditional_break_before, conditional_break_after
     while True:
-        # run, run_to, exit 나올 때까지 루프
         try:
             command = client.recv()
         except EOFError:
