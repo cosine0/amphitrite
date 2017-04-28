@@ -49,9 +49,10 @@ def convert_string_to_variable(address, length=None):
             var_id = convertMemoryToSymbolicVariable(MemoryAccess(p_byte, 1)).getId()
             variables.append(var_id)
     else:
-        for p_byte in xrange(length):
+        for p_byte in xrange(address, address + length):
             c = getCurrentMemoryValue(p_byte)
             current_value.append(chr(c))
+            setConcreteMemoryValue(p_byte, c)
             var_id = convertMemoryToSymbolicVariable(MemoryAccess(p_byte, 1)).getId()
             variables.append(var_id)
     return variables, ''.join(current_value)
@@ -125,7 +126,7 @@ def process_commands(instruction=None):
             client.send({'variable_id': variable.getId(), 'bit_size': variable.getBitSize()})
         elif command['action'] == 'set_string_as_variable':
             start_address = resolve_expression(command['string_address'])
-            variable_ids, current_value = convert_string_to_variable(start_address)
+            variable_ids, current_value = convert_string_to_variable(start_address, command['length'])
             client.send({'start_address': start_address, 'variable_ids': variable_ids, 'current_value': current_value})
         elif command['action'] == 'get_register_se':
             register = getattr(REG, command['register'].name.upper())
@@ -157,8 +158,10 @@ def process_commands(instruction=None):
             else:
                 size = register_ast.getBitvectorSize()
                 setAstRepresentationMode(AST_REPRESENTATION.SMT)
-                equation_ast = ast.assert_(ast.equal(register_ast, ast.bv(value, size)))
-                model = getModel(equation_ast)
+                equation_ast = ast.equal(register_ast, ast.bv(value, size))
+                if command['include_path_constraint']:
+                    equation_ast = ast.land(equation_ast, getPathConstraintsAst())
+                model = getModel(ast.assert_(equation_ast))
                 if model:
                     picklable_model = dict()
                     for variable_id, model_object in model.iteritems():

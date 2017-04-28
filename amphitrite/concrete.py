@@ -8,7 +8,9 @@ import marshal
 from multiprocessing.connection import Listener
 from elftools.elf.elffile import ELFFile
 
-zmm12, zmm13, zmm10, zmm11, zmm16, zmm17, zmm14, zmm15, bl, zmm18, zmm19, bh, bp, bx, sil, esp, r8b, r8d, rip, spl, rl, rh, mm7, rax, gs, zmm29, zmm28, zmm27, zmm26, zmm25, zmm24, zmm23, zmm22, zmm21, zmm20, r9, om, r14d, r14b, of, oe, r14w, xmm3, xmm0, xmm1, xmm6, xmm7, xmm4, xmm5, xmm8, r11w, sp, rdx, zmm30, zmm31, cr14, cr15, cr10, cr11, cr12, cr13, xmm2, r14, r15, r12, r13, r10, r11, r11b, rbx, r11d, pf, pe, pm, zm, ze, zf, es, cr2, cr3, cr0, cr1, cr6, cr7, cr4, cr5, ymm1, ymm0, cr8, ymm2, mxcsr, ymm4, ymm7, ymm6, um, zmm9, eflags, ue, zmm1, zmm2, zmm3, zmm4, zmm5, zmm6, zmm7, ip, fs, mm5, mm4, fz, mm6, mm1, mm0, mm3, mm2, xmm10, xmm11, xmm12, xmm9, xmm14, xmm15, r13w, r13d, r13b, ecx, ymm9, ch, ymm8, cf, ah, cx, cs, rdi, ss, r10b, edi, r10d, si, r8w, edx, r10w, sf, dil, eip, dl, cr9, rcx, dh, di, df, r9b, de, bpl, ymm12, dx, ymm3, ds, xmm13, r15d, zmm8, r15b, cl, eax, r15w, tf, ebp, dm, daz, ymm14, af, r8, r9d, al, rbp, zmm0, im, ymm5, r9w, ax, ie, esi, IF, rsi, r12w, ebx, ymm11, ymm10, ymm13, r12b, ymm15, r12d, rsp = sympy.symbols('zmm12 zmm13 zmm10 zmm11 zmm16 zmm17 zmm14 zmm15 bl zmm18 zmm19 bh bp bx sil esp r8b r8d rip spl rl rh mm7 rax gs zmm29 zmm28 zmm27 zmm26 zmm25 zmm24 zmm23 zmm22 zmm21 zmm20 r9 om r14d r14b of oe r14w xmm3 xmm0 xmm1 xmm6 xmm7 xmm4 xmm5 xmm8 r11w sp rdx zmm30 zmm31 cr14 cr15 cr10 cr11 cr12 cr13 xmm2 r14 r15 r12 r13 r10 r11 r11b rbx r11d pf pe pm zm ze zf es cr2 cr3 cr0 cr1 cr6 cr7 cr4 cr5 ymm1 ymm0 cr8 ymm2 mxcsr ymm4 ymm7 ymm6 um zmm9 eflags ue zmm1 zmm2 zmm3 zmm4 zmm5 zmm6 zmm7 ip fs mm5 mm4 fz mm6 mm1 mm0 mm3 mm2 xmm10 xmm11 xmm12 xmm9 xmm14 xmm15 r13w r13d r13b ecx ymm9 ch ymm8 cf ah cx cs rdi ss r10b edi r10d si r8w edx r10w sf dil eip dl cr9 rcx dh di df r9b de bpl ymm12 dx ymm3 ds xmm13 r15d zmm8 r15b cl eax r15w tf ebp dm daz ymm14 af r8 r9d al rbp zmm0 im ymm5 r9w ax ie esi IF rsi r12w ebx ymm11 ymm10 ymm13 r12b ymm15 r12d rsp')
+# symbolic registers
+zmm12, zmm13, zmm10, zmm11, zmm16, zmm17, zmm14, zmm15, bl, zmm18, zmm19, bh, bp, bx, sil, esp, r8b, r8d, rip, spl, rl, rh, mm7, rax, gs, zmm29, zmm28, zmm27, zmm26, zmm25, zmm24, zmm23, zmm22, zmm21, zmm20, r9, om, r14d, r14b, of, oe, r14w, xmm3, xmm0, xmm1, xmm6, xmm7, xmm4, xmm5, xmm8, r11w, sp, rdx, zmm30, zmm31, cr14, cr15, cr10, cr11, cr12, cr13, xmm2, r14, r15, r12, r13, r10, r11, r11b, rbx, r11d, pf, pe, pm, zm, ze, zf, es, cr2, cr3, cr0, cr1, cr6, cr7, cr4, cr5, ymm1, ymm0, cr8, ymm2, mxcsr, ymm4, ymm7, ymm6, um, zmm9, eflags, ue, zmm1, zmm2, zmm3, zmm4, zmm5, zmm6, zmm7, ip, fs, mm5, mm4, fz, mm6, mm1, mm0, mm3, mm2, xmm10, xmm11, xmm12, xmm9, xmm14, xmm15, r13w, r13d, r13b, ecx, ymm9, ch, ymm8, cf, ah, cx, cs, rdi, ss, r10b, edi, r10d, si, r8w, edx, r10w, sf, dil, eip, dl, cr9, rcx, dh, di, df, r9b, de, bpl, ymm12, dx, ymm3, ds, xmm13, r15d, zmm8, r15b, cl, eax, r15w, tf, ebp, dm, daz, ymm14, af, r8, r9d, al, rbp, zmm0, im, ymm5, r9w, ax, ie, esi, IF, rsi, r12w, ebx, ymm11, ymm10, ymm13, r12b, ymm15, r12d, rsp = sympy.symbols(
+    'zmm12 zmm13 zmm10 zmm11 zmm16 zmm17 zmm14 zmm15 bl zmm18 zmm19 bh bp bx sil esp r8b r8d rip spl rl rh mm7 rax gs zmm29 zmm28 zmm27 zmm26 zmm25 zmm24 zmm23 zmm22 zmm21 zmm20 r9 om r14d r14b of oe r14w xmm3 xmm0 xmm1 xmm6 xmm7 xmm4 xmm5 xmm8 r11w sp rdx zmm30 zmm31 cr14 cr15 cr10 cr11 cr12 cr13 xmm2 r14 r15 r12 r13 r10 r11 r11b rbx r11d pf pe pm zm ze zf es cr2 cr3 cr0 cr1 cr6 cr7 cr4 cr5 ymm1 ymm0 cr8 ymm2 mxcsr ymm4 ymm7 ymm6 um zmm9 eflags ue zmm1 zmm2 zmm3 zmm4 zmm5 zmm6 zmm7 ip fs mm5 mm4 fz mm6 mm1 mm0 mm3 mm2 xmm10 xmm11 xmm12 xmm9 xmm14 xmm15 r13w r13d r13b ecx ymm9 ch ymm8 cf ah cx cs rdi ss r10b edi r10d si r8w edx r10w sf dil eip dl cr9 rcx dh di df r9b de bpl ymm12 dx ymm3 ds xmm13 r15d zmm8 r15b cl eax r15w tf ebp dm daz ymm14 af r8 r9d al rbp zmm0 im ymm5 r9w ax ie esi IF rsi r12w ebx ymm11 ymm10 ymm13 r12b ymm15 r12d rsp')
 started_child = []
 
 original_excepthook = sys.excepthook
@@ -58,6 +60,9 @@ class Solution(object):
 # decorator
 def method_at_break(method):
     def after_break(self, *args, **kwargs):
+        exit_value = self.process.poll()
+        if exit_value is not None:
+            raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
         if self.running:
             try:
                 break_message = self.connection.recv()
@@ -136,7 +141,8 @@ class Concrete(object):
             raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
 
         self.running = True
-        self.connection.send({'action': 'run_to', 'address': address, 'inclusive': include_this_address,'commit': commit_this_address_to_hw})
+        self.connection.send({'action': 'run_to', 'address': address, 'inclusive': include_this_address,
+                              'commit': commit_this_address_to_hw})
         print '[>] Triton is running'
 
     @method_at_break
@@ -164,33 +170,24 @@ class Concrete(object):
 
     @method_at_break
     def set_register_as_variable(self, register):
-        exit_value = self.process.poll()
-        if exit_value is not None:
-            raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
-
         self.connection.send({'action': 'set_register_as_variable', 'register': register})
         result = self.connection.recv()
         self._variables.append(result['variable_id'])
 
     @method_at_break
-    def set_string_as_variable(self, expression):
-        exit_value = self.process.poll()
-        if exit_value is not None:
-            raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
-
-        self.connection.send({'action': 'set_string_as_variable', 'string_address': expression})
+    def set_string_as_variable(self, expression, length=None):
+        self.connection.send({'action': 'set_string_as_variable', 'string_address': expression, 'length': length})
         result = self.connection.recv()
         variable_ids = tuple(result['variable_ids'])
         self._string_variables[variable_ids] = result['current_value']
         print '[*] String at {:#x} {!r} is set as variable'.format(result['start_address'], result['current_value'])
         return variable_ids
 
+    def set_bytes_as_variable(self, expression, length):
+        self.set_string_as_variable(expression, length)
+
     @method_at_break
     def get_register_se(self, register, dereference=True, simplify=True):
-        exit_value = self.process.poll()
-        if exit_value is not None:
-            raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
-
         self.connection.send({'action': 'get_register_se', 'register': register, 'dereference': dereference,
                               'simplify': simplify})
         result = self.connection.recv()
@@ -198,10 +195,6 @@ class Concrete(object):
 
     @method_at_break
     def get_value(self, expression):
-        exit_value = self.process.poll()
-        if exit_value is not None:
-            raise EOFError('[*] Triton has been terminated.')
-
         self.connection.send({'action': 'get_value', 'expression': expression})
         try:
             result = self.connection.recv()
@@ -213,18 +206,15 @@ class Concrete(object):
 
     @method_at_break
     def eval(self, function):
-        exit_value = self.process.poll()
-        if exit_value is not None:
-            raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
-
         function = marshal.dumps(function.func_code)
         self.connection.send({'action': 'eval', 'function': function})
         result = self.connection.recv()
         return result['return_value']
 
     @method_at_break
-    def solve_equality(self, register, value):
-        self.connection.send({'action': 'solve_equality', 'register': register, 'value': value})
+    def solve_equality(self, register, value, include_path_constraint=True):
+        self.connection.send({'action': 'solve_equality', 'register': register, 'value': value,
+                              'include_path_constraint': include_path_constraint})
         result = self.connection.recv()
         if not result['sat']:
             raise RuntimeError('unsat')
