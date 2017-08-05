@@ -13,7 +13,8 @@ key = ''
 while True:
     try:
         c.run_to_condition(condition, True)
-        key += chr(c.get_value(rax))
+        value = c.get_value(al)
+        key += chr(value)
     except EOFError:
         break
 print repr(key)

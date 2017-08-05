@@ -111,7 +111,7 @@ def process_commands(instruction=None):
                 if command['commit']:
                     conditional_break_after = condition
                 else:
-                    breaks_before_symproc = condition
+                    conditional_break_before_symproc = condition
             else:
                 conditional_break_before_symproc = condition
             if not started:

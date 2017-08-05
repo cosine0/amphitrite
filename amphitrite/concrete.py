@@ -165,14 +165,15 @@ class Concrete(object):
         print '[>] Triton is running'
 
     @method_at_break
-    def run_to_condition(self, function, include_this_address=False):
+    def run_to_condition(self, function, include_this_address=False, commit_next_instruction_to_hw=None):
         exit_value = self.process.poll()
         if exit_value is not None:
             raise EOFError('[*] Triton has been terminated with exit code {}.'.format(exit_value))
 
         function = marshal.dumps(function.func_code)
         self.running = True
-        self.connection.send({'action': 'run_to_condition', 'function': function, 'inclusive': include_this_address})
+        self.connection.send({'action': 'run_to_condition', 'function': function, 'inclusive': include_this_address,
+                              'commit': commit_next_instruction_to_hw})
         print '[>] Triton is running'
 
     @method_at_break
