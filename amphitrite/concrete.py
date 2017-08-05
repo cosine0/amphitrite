@@ -10,7 +10,14 @@ from elftools.elf.elffile import ELFFile
 
 # symbolic registers
 zmm12, zmm13, zmm10, zmm11, zmm16, zmm17, zmm14, zmm15, bl, zmm18, zmm19, bh, bp, bx, sil, esp, r8b, r8d, rip, spl, rl, rh, mm7, rax, gs, zmm29, zmm28, zmm27, zmm26, zmm25, zmm24, zmm23, zmm22, zmm21, zmm20, r9, om, r14d, r14b, of, oe, r14w, xmm3, xmm0, xmm1, xmm6, xmm7, xmm4, xmm5, xmm8, r11w, sp, rdx, zmm30, zmm31, cr14, cr15, cr10, cr11, cr12, cr13, xmm2, r14, r15, r12, r13, r10, r11, r11b, rbx, r11d, pf, pe, pm, zm, ze, zf, es, cr2, cr3, cr0, cr1, cr6, cr7, cr4, cr5, ymm1, ymm0, cr8, ymm2, mxcsr, ymm4, ymm7, ymm6, um, zmm9, eflags, ue, zmm1, zmm2, zmm3, zmm4, zmm5, zmm6, zmm7, ip, fs, mm5, mm4, fz, mm6, mm1, mm0, mm3, mm2, xmm10, xmm11, xmm12, xmm9, xmm14, xmm15, r13w, r13d, r13b, ecx, ymm9, ch, ymm8, cf, ah, cx, cs, rdi, ss, r10b, edi, r10d, si, r8w, edx, r10w, sf, dil, eip, dl, cr9, rcx, dh, di, df, r9b, de, bpl, ymm12, dx, ymm3, ds, xmm13, r15d, zmm8, r15b, cl, eax, r15w, tf, ebp, dm, daz, ymm14, af, r8, r9d, al, rbp, zmm0, im, ymm5, r9w, ax, ie, esi, IF, rsi, r12w, ebx, ymm11, ymm10, ymm13, r12b, ymm15, r12d, rsp = sympy.symbols(
-    'zmm12 zmm13 zmm10 zmm11 zmm16 zmm17 zmm14 zmm15 bl zmm18 zmm19 bh bp bx sil esp r8b r8d rip spl rl rh mm7 rax gs zmm29 zmm28 zmm27 zmm26 zmm25 zmm24 zmm23 zmm22 zmm21 zmm20 r9 om r14d r14b of oe r14w xmm3 xmm0 xmm1 xmm6 xmm7 xmm4 xmm5 xmm8 r11w sp rdx zmm30 zmm31 cr14 cr15 cr10 cr11 cr12 cr13 xmm2 r14 r15 r12 r13 r10 r11 r11b rbx r11d pf pe pm zm ze zf es cr2 cr3 cr0 cr1 cr6 cr7 cr4 cr5 ymm1 ymm0 cr8 ymm2 mxcsr ymm4 ymm7 ymm6 um zmm9 eflags ue zmm1 zmm2 zmm3 zmm4 zmm5 zmm6 zmm7 ip fs mm5 mm4 fz mm6 mm1 mm0 mm3 mm2 xmm10 xmm11 xmm12 xmm9 xmm14 xmm15 r13w r13d r13b ecx ymm9 ch ymm8 cf ah cx cs rdi ss r10b edi r10d si r8w edx r10w sf dil eip dl cr9 rcx dh di df r9b de bpl ymm12 dx ymm3 ds xmm13 r15d zmm8 r15b cl eax r15w tf ebp dm daz ymm14 af r8 r9d al rbp zmm0 im ymm5 r9w ax ie esi IF rsi r12w ebx ymm11 ymm10 ymm13 r12b ymm15 r12d rsp')
+    'zmm12 zmm13 zmm10 zmm11 zmm16 zmm17 zmm14 zmm15 bl zmm18 zmm19 bh bp bx sil esp r8b r8d rip spl rl rh mm7 rax gs '
+    'zmm29 zmm28 zmm27 zmm26 zmm25 zmm24 zmm23 zmm22 zmm21 zmm20 r9 om r14d r14b of oe r14w xmm3 xmm0 xmm1 xmm6 xmm7 '
+    'xmm4 xmm5 xmm8 r11w sp rdx zmm30 zmm31 cr14 cr15 cr10 cr11 cr12 cr13 xmm2 r14 r15 r12 r13 r10 r11 r11b rbx r11d '
+    'pf pe pm zm ze zf es cr2 cr3 cr0 cr1 cr6 cr7 cr4 cr5 ymm1 ymm0 cr8 ymm2 mxcsr ymm4 ymm7 ymm6 um zmm9 eflags ue '
+    'zmm1 zmm2 zmm3 zmm4 zmm5 zmm6 zmm7 ip fs mm5 mm4 fz mm6 mm1 mm0 mm3 mm2 xmm10 xmm11 xmm12 xmm9 xmm14 xmm15 r13w '
+    'r13d r13b ecx ymm9 ch ymm8 cf ah cx cs rdi ss r10b edi r10d si r8w edx r10w sf dil eip dl cr9 rcx dh di df r9b '
+    'de bpl ymm12 dx ymm3 ds xmm13 r15d zmm8 r15b cl eax r15w tf ebp dm daz ymm14 af r8 r9d al rbp zmm0 im ymm5 r9w '
+    'ax ie esi IF rsi r12w ebx ymm11 ymm10 ymm13 r12b ymm15 r12d rsp')
 started_child = []
 
 original_excepthook = sys.excepthook
