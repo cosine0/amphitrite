@@ -225,11 +225,11 @@ class Concrete(object):
                               'register_or_address': register_or_address,
                               'value': value,
                               'include_path_constraint': include_path_constraint})
-        result = self.connection.recv()
         print '[>] Solving'
+        result = self.connection.recv()
+        print '[+] Solving: Done'
         if not result['sat']:
             raise RuntimeError('unsat')
-        print '[+] Solving: Done'
         return Solution(self, result['model'])
 
     def close(self):
