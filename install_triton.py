@@ -71,10 +71,10 @@ def main():
             os.unlink('pin-2.14-71313-gcc.4.4.7-linux')
     check_call(['tar', '-xvf', 'pin-2.14-71313-gcc.4.4.7-linux.tar.gz', '-C', '/usr/local/bin'])
     shutil.rmtree(temp_dir)
-    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/pin.sh', 0755)
-    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Utils/testGccVersion', 0755)
-    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/ia32/', 2751)
-    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/intel64/', 2751)
+    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/pin.sh', 0o755)
+    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Utils/testGccVersion', 0o755)
+    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/ia32/', 0o2751)
+    os.chmod('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/intel64/', 0o2751)
 
     os.chdir('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools')
     check_call(['git', 'clone', 'https://github.com/JonathanSalwan/Triton.git'])
@@ -82,8 +82,8 @@ def main():
     os.mkdir('build')
     os.chdir('build')
     check_call(['cmake', '..', '-DPINTOOL=on']
-               + ['-DKERNEL4=on'] if platform.release().startswith('4') else ['-DKERNEL4=off'])
-    check_call('make')
+               + (['-DKERNEL4=on'] if platform.release().startswith('4') else ['-DKERNEL4=off']))
+    check_call(['make'])
 
     if os.path.exists('/usr/local/bin/triton'):
         os.unlink('/usr/local/bin/triton')
