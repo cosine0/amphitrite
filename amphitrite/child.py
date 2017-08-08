@@ -59,7 +59,7 @@ def convert_string_to_variable(address, length=None):
 
 
 def process_commands(instruction=None):
-    global started, breaks_before_symproc, breaks_before, breaks_after, step_before_symproc, step_before, step_after,\
+    global started, breaks_before_symproc, breaks_before, breaks_after, step_before_symproc, step_before, step_after, \
         conditional_break_before_symproc, conditional_break_before, conditional_break_after
     while True:
         try:
@@ -147,28 +147,63 @@ def process_commands(instruction=None):
             return_value = func(instruction)
             client.send({'return_value': return_value})
         elif command['action'] == 'solve_equality':
-            register = getattr(REG, command['register'].name.upper())
-            register_ast = buildSymbolicRegister(register)
             value = command['value']
-            if not register_ast.isSymbolized():
-                if register_ast.evaluate() == value:
+            if isinstance(value, (int, long)):
+                register = getattr(REG, command['register_or_address'].name.upper())
+                register_ast = buildSymbolicRegister(register)
+                value = value
+                if not register_ast.isSymbolized():
+                    if register_ast.evaluate() == value:
+                        client.send({'sat': True, 'model': {}})
+                    else:
+                        client.send({'sat': False})
+                else:
+                    size = register_ast.getBitvectorSize()
+                    setAstRepresentationMode(AST_REPRESENTATION.SMT)
+                    equation_ast = ast.equal(register_ast, ast.bv(value, size))
+                    if command['include_path_constraint']:
+                        equation_ast = ast.land(equation_ast, getPathConstraintsAst())
+                    model = getModel(ast.assert_(equation_ast))
+                    if model:
+                        picklable_model = dict()
+                        for variable_id, model_object in model.iteritems():
+                            picklable_model[variable_id] = model_object.getValue()
+                        client.send({'sat': True, 'model': picklable_model})
+                    else:
+                        client.send({'sat': False})
+            elif isinstance(value, str):
+                string_address = resolve_expression(command['register_or_address'])
+                value = value
+                equation_ast = None
+                for i, expected_char in enumerate(value):
+                    expected_char = ord(expected_char)
+                    char_ast = buildSymbolicMemory(MemoryAccess(string_address + i, 1))
+                    if not char_ast.isSymbolized():
+                        if char_ast.evaluate() == expected_char:
+                            continue  # always true
+                        else:
+                            print 'mem:', hex(char_ast.evaluate()), 'expected:', hex(expected_char)
+                            client.send({'sat': False})  # always false
+                            return
+                    if equation_ast is None:
+                        equation_ast = ast.equal(char_ast, ast.bv(expected_char, 8))
+                    else:
+                        equation_ast = ast.land(
+                            equation_ast,
+                            ast.equal(char_ast, ast.bv(expected_char, 8)))
+                if equation_ast is None:
                     client.send({'sat': True, 'model': {}})
                 else:
-                    client.send({'sat': False})
+                    model = getModel(ast.assert_(equation_ast))
+                    if model:
+                        picklable_model = dict()
+                        for variable_id, model_object in model.iteritems():
+                            picklable_model[variable_id] = model_object.getValue()
+                        client.send({'sat': True, 'model': picklable_model})
+                    else:
+                        client.send({'sat': False})
             else:
-                size = register_ast.getBitvectorSize()
-                setAstRepresentationMode(AST_REPRESENTATION.SMT)
-                equation_ast = ast.equal(register_ast, ast.bv(value, size))
-                if command['include_path_constraint']:
-                    equation_ast = ast.land(equation_ast, getPathConstraintsAst())
-                model = getModel(ast.assert_(equation_ast))
-                if model:
-                    picklable_model = dict()
-                    for variable_id, model_object in model.iteritems():
-                        picklable_model[variable_id] = model_object.getValue()
-                    client.send({'sat': True, 'model': picklable_model})
-                else:
-                    client.send({'sat': False})
+                raise TypeError('solve_equality: Unexpected type: {}'.format(type(value)))
         elif command['action'] == 'exit':
             client.close()
             exit()

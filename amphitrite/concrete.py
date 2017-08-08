@@ -220,12 +220,16 @@ class Concrete(object):
         return result['return_value']
 
     @method_at_break
-    def solve_equality(self, register, value, include_path_constraint=True):
-        self.connection.send({'action': 'solve_equality', 'register': register, 'value': value,
+    def solve_equality(self, register_or_address, value, include_path_constraint=True):
+        self.connection.send({'action': 'solve_equality',
+                              'register_or_address': register_or_address,
+                              'value': value,
                               'include_path_constraint': include_path_constraint})
         result = self.connection.recv()
+        print '[>] Solving'
         if not result['sat']:
             raise RuntimeError('unsat')
+        print '[+] Solving: Done'
         return Solution(self, result['model'])
 
     def close(self):
