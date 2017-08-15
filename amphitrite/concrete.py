@@ -164,6 +164,8 @@ class Concrete(object):
                               'commit': commit_next_instruction_to_hw})
         print '[>] Triton is running'
 
+    step = run_to_next_instruction
+
     @method_at_break
     def run_to_condition(self, function, include_this_address=False, commit_next_instruction_to_hw=None):
         exit_value = self.process.poll()
