@@ -40,24 +40,39 @@ def main():
             os.chdir('..')
             shutil.rmtree('capstone')
 
-        try:
-            check_z3 = check_output(['gcc', '-lz3'], stderr=STDOUT)
-        except CalledProcessError as e:
-            check_z3 = e.output
-        if 'cannot find -lz3' in check_z3:
-            check_call(['git', 'clone', 'https://github.com/Z3Prover/z3.git'])
-            os.chdir('z3')
-            check_call(['python', 'scripts/mk_make.py'])
-            os.chdir('build')
-            check_call(['make'])
-            check_call(['make', 'install'])
-
     elif dist[1] >= '16.04':
         required_packages = ['git', 'build-essential', 'cmake', 'libpython2.7-dev', 'libboost-all-dev',
-                             'libcapstone-dev', 'libz3-dev']
+                             'libcapstone-dev']
         check_call(['apt-get', 'install', '-y'] + required_packages)
     else:
         raise RuntimeError('Only Ubuntu 14.04, 16.04 and higher are supported.')
+
+    try:
+        check_z3 = check_output(['gcc', '-lz3'], stderr=STDOUT)
+    except CalledProcessError as e:
+        check_z3 = e.output
+
+    install_z3 = False
+    if 'cannot find -lz3' in check_z3:
+        install_z3 = True
+    else:
+        try:
+            z3_version = check_output(['gcc', '-lz3'], stderr=STDOUT)
+        except OSError:
+            install_z3 = True
+        else:
+            if z3_version < 'Z3 version 4.4.1':
+                install_z3 = True
+
+    if install_z3:
+        check_call(['git', 'clone', 'https://github.com/Z3Prover/z3.git'])
+        os.chdir('z3')
+        check_call(['python', 'scripts/mk_make.py'])
+        os.chdir('build')
+        check_call(['make'])
+        check_call(['make', 'install'])
+        os.chdir('../..')
+        shutil.rmtree('z3')
 
     os.chdir(temp_dir)
     print 'cur dir:', os.curdir
