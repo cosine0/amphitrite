@@ -16,4 +16,5 @@ sudo python setup.py install
 
 Note
 ---
+Amphitrite does not work with master repo version of Triton. Please use Triton v0.5 release version.  
 This time only supports single-threaded and single-processed target binary.

@@ -94,6 +94,7 @@ def main():
     os.chdir('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools')
     check_call(['git', 'clone', 'https://github.com/JonathanSalwan/Triton.git'])
     os.chdir('Triton')
+    check_call(['git', 'reset', '--hard', '0796f943f89470d022aed145a7ff6405de5005c1`'])
     os.mkdir('build')
     os.chdir('build')
     check_call(['cmake', '..', '-DPINTOOL=on']
