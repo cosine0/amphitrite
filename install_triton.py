@@ -57,8 +57,8 @@ def main():
         install_z3 = True
     else:
         try:
-            z3_version = check_output(['gcc', '-lz3'], stderr=STDOUT)
-        except OSError:
+            z3_version = check_output(['z3', '-version'], stderr=STDOUT)
+        except CalledProcessError:
             install_z3 = True
         else:
             if z3_version < 'Z3 version 4.4.1':
@@ -94,7 +94,7 @@ def main():
     os.chdir('/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools')
     check_call(['git', 'clone', 'https://github.com/JonathanSalwan/Triton.git'])
     os.chdir('Triton')
-    check_call(['git', 'reset', '--hard', '0796f943f89470d022aed145a7ff6405de5005c1`'])
+    check_call(['git', 'reset', '--hard', '0796f943f89470d022aed145a7ff6405de5005c1'])
     os.mkdir('build')
     os.chdir('build')
     check_call(['cmake', '..', '-DPINTOOL=on']
