@@ -147,6 +147,9 @@ def main():
     check_call(cmake_args)
     check_call(['make'])
 
+    check_call(['patch', '/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/build/triton', '-i',
+                os.path.join(temp_dir, 'patch_triton_executable.diff')])
+
     if os.path.exists('/usr/local/bin/triton'):
         os.unlink('/usr/local/bin/triton')
     if os.path.exists('/usr/local/bin/tritonAttach'):
