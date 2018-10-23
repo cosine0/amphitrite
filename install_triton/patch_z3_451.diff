@@ -1,0 +1,14 @@
+diff --git a/src/libtriton/engines/solver/solverEngine.cpp b/src/libtriton/engines/solver/solverEngine.cpp
+index bec39176..3cc725b9 100644
+--- a/src/libtriton/engines/solver/solverEngine.cpp
++++ b/src/libtriton/engines/solver/solverEngine.cpp
+@@ -139,7 +139,8 @@ namespace triton {
+         formula << this->symbolicEngine->getFullAst(node);
+ 
+         /* Create the context and AST */
+-        Z3_ast ast = Z3_parse_smtlib2_string(ctx, formula.str().c_str(), 0, 0, 0, 0, 0, 0);
++        Z3_ast_vector ast_vector = Z3_parse_smtlib2_string(ctx, formula.str().c_str(), 0, 0, 0, 0, 0, 0);
++        Z3_ast ast = Z3_ast_vector_get(ctx, ast_vector, 0);
+         z3::expr eq(ctx, ast);
+ 
+         /* Create a solver and add the expression */

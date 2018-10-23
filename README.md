@@ -11,7 +11,7 @@ Install
 #  64bit - Ubuntu>=14.04
 sudo python install_triton.py  
 
-sudo python setup.py install
+sudo -H python2.7 -mpip install .
 ```
 
 Note
