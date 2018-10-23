@@ -4,6 +4,7 @@ import platform
 import shutil
 import tempfile
 from distutils.dir_util import copy_tree
+from distutils.version import LooseVersion
 from subprocess import check_call, check_output, STDOUT, CalledProcessError
 
 
@@ -15,12 +16,18 @@ def main():
     if dist[0] != 'Ubuntu':
         raise RuntimeError('Only support Ubuntu.')
 
+    if platform.machine() == 'i686':
+        if dist[1] != '14.04' or platform.release() >= '4':
+            raise RuntimeError('In 32bit version, Only support Ubuntu 14.04 with kernel version less than 4 '
+                               '(Hint: Install Ubuntu 32bit 14.04.0-14.04.3')
+    elif platform.machine() == 'x86_64':
+        if LooseVersion(dist[1]) < LooseVersion('14.04'):
+            raise RuntimeError('Only support Ubuntu 14.04 or higher.')
+    else:
+        raise RuntimeError('Only support x64 and x86.')
+
     if os.getuid() != 0:
         raise RuntimeError('Super user is required.')
-
-    if platform.machine() == 'i686' and (dist[1] != '14.04' or platform.release() >= '4'):
-        raise RuntimeError('In 32bit version, Only support Ubuntu 14.04 with kernel version less than 4'
-                           '(Hint: Install Ubuntu 32bit 14.04.0-14.04.3')
 
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -29,11 +36,11 @@ def main():
     copy_tree(os.curdir, temp_dir)
     os.chdir(temp_dir)
     if dist[1] == '14.04':
-        required_packages = ['git', 'build-essential', 'cmake', 'libpython2.7-dev', 'libboost1.55-all-dev']
+        required_packages = ['git', 'build-essential', 'cmake', 'libpython2.7-dev', 'libboost1.55-all-dev', 'unzip']
         check_call(['apt-get', 'install', '-y'] + required_packages)
 
     elif dist[1] >= '16.04':
-        required_packages = ['git', 'build-essential', 'cmake', 'libpython2.7-dev', 'libboost-all-dev']
+        required_packages = ['git', 'build-essential', 'cmake', 'libpython2.7-dev', 'libboost-all-dev', 'unzip']
         check_call(['apt-get', 'install', '-y'] + required_packages)
     else:
         raise RuntimeError('Only Ubuntu 14.04, 16.04 and higher are supported.')
@@ -76,18 +83,8 @@ def main():
         except CalledProcessError:
             install_z3 = True
         else:
-            if z3_version < 'Z3 version 4.4.1':
+            if z3_version < 'Z3 version 4.8.1':
                 install_z3 = True
-
-    if install_z3:
-        check_call(['git', 'clone', 'https://github.com/Z3Prover/z3.git'])
-        os.chdir('z3')
-        check_call(['python', 'scripts/mk_make.py'])
-        os.chdir('build')
-        check_call(['make'])
-        check_call(['make', 'install'])
-        os.chdir('../..')
-        shutil.rmtree('z3')
 
     os.chdir(temp_dir)
     check_call(['wget', '-U', 'Mozilla/5.0',
@@ -110,24 +107,44 @@ def main():
     check_call(['git', 'reset', '--hard', 'v0.5'])
     check_call(['git', 'apply', os.path.join(temp_dir, 'patch_triton_issue_679.diff')])
     check_call(['git', 'apply', os.path.join(temp_dir, 'patch_z3_451.diff')])
-    os.mkdir('build')
-    os.chdir('build')
+
+    cmake_args = ['cmake', '..', '-DPINTOOL=on',
+                  '-DKERNEL4=on' if platform.release().startswith('4') else '-DKERNEL4=off']
+    if install_z3:
+        if dist == '14.04':
+            if platform.machine() == 'i686':
+                z3_file = 'z3-4.8.1.b301a59899ff-x86-ubuntu-14.04'
+            else:
+                z3_file = 'z3-4.8.1.016872a5e0f6-x64-ubuntu-14.04'
+        else:
+            z3_file = 'z3-4.8.1.016872a5e0f6-x64-ubuntu-16.04'
+        z3_url = 'https://github.com/Z3Prover/z3/releases/download/z3-4.8.1/{}.zip'.format(z3_file)
+        check_call(['wget', '-U', 'Mozilla/5.0', '-O', 'z3.zip', z3_url])
+        check_call(['unzip', 'z3.zip'])
+        os.unlink('z3.zip')
+        shutil.move(z3_file, 'z3')
+
+        z3_dir = '/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/z3'
+        cmake_args.append('-DZ3_INCLUDE_DIRS=' + z3_dir + '/include')
+        cmake_args.append('-DZ3_LIBRARIES=' + z3_dir + '/bin/libz3.so')
 
     if install_capstone:
         check_call(['git', 'clone', 'https://github.com/aquynh/capstone.git', 'capstone_git'])
         os.chdir('capstone_git')
         check_call(['git', 'reset', '--hard', '3.0.5'])
         check_call(['./make.sh'])
+
         capstone_dir = '/usr/local/bin/pin-2.14-71313-gcc.4.4.7-linux/source/tools/Triton/capstone'
         check_call(['make', 'install'], env={'PREFIX': capstone_dir})
         os.chdir('..')
         shutil.rmtree('capstone_git')
-        check_call(['cmake', '..', '-DPINTOOL=on', '-DCAPSTONE_INCLUDE_DIRS=' + capstone_dir + '/include',
-                    '-DCAPSTONE_LIBRARIES=' + capstone_dir + '/lib/libcapstone.so']
-                   + (['-DKERNEL4=on'] if platform.release().startswith('4') else ['-DKERNEL4=off']))
-    else:
-        check_call(['cmake', '..', '-DPINTOOL=on']
-                   + (['-DKERNEL4=on'] if platform.release().startswith('4') else ['-DKERNEL4=off']))
+
+        cmake_args.append('-DCAPSTONE_INCLUDE_DIRS=' + capstone_dir + '/include')
+        cmake_args.append('-DCAPSTONE_LIBRARIES=' + capstone_dir + '/lib/libcapstone.so')
+
+    os.mkdir('build')
+    os.chdir('build')
+    check_call(cmake_args)
     check_call(['make'])
 
     if os.path.exists('/usr/local/bin/triton'):
