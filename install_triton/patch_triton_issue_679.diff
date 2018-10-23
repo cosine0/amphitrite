@@ -1,0 +1,26 @@
+diff --git a/src/libtriton/ast/z3/z3Result.cpp b/src/libtriton/ast/z3/z3Result.cpp
+index 426edc5e..16caf468 100644
+--- a/src/libtriton/ast/z3/z3Result.cpp
++++ b/src/libtriton/ast/z3/z3Result.cpp
+@@ -49,19 +49,15 @@ namespace triton {
+ 
+ 
+     triton::__uint Z3Result::getUintValue(void) const {
+-      triton::__uint result = 0;
+-
+       if (!this->expr.is_int())
+         throw triton::exceptions::Exception("Z3Result::getUintValue(): The ast is not a numerical value.");
+ 
+       #if defined(__x86_64__) || defined(_M_X64)
+-      Z3_get_numeral_uint64(this->context, this->expr, &result);
++      return expr.get_numeral_uint64();
+       #endif
+       #if defined(__i386) || defined(_M_IX86)
+-      Z3_get_numeral_uint(this->context, this->expr, &result);
++      return expr.get_numeral_uint();
+       #endif
+-
+-      return result;
+     }
+ 
+ 

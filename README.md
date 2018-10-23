@@ -9,9 +9,9 @@ Install
 # triton installer supports:
 #  32bit - Ubuntu 14.04 with kernel 3.x (14.04.0-3 and their updates)
 #  64bit - Ubuntu>=14.04
-sudo python install_triton.py  
+sudo python install_triton/install_triton.py  
 
-sudo python setup.py install
+sudo -H python2.7 -mpip install .
 ```
 
 Note
