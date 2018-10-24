@@ -1,0 +1,4 @@
+20c20
+< LD_BIND_NOW=1 $PIN_BIN_PATH -ifeellucky -t $PINTOOL_PATH -script $1 -- ${@:2}
+---
+> LD_BIND_NOW=1 $PIN_BIN_PATH -ifeellucky -injection child -t $PINTOOL_PATH -script $1 -- ${@:2}
